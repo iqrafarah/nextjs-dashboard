@@ -13,6 +13,8 @@ const traceQuery = createQueryDiagnostics('actions');
 const sql = postgres(process.env.POSTGRES_URL!, {
   ssl: 'require',
   prepare: false,
+  max: 1,
+  connect_timeout: 10,
 });
 
 const FormSchema = z.object({

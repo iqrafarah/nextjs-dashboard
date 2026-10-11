@@ -12,6 +12,8 @@ const traceQuery = createQueryDiagnostics('auth');
 const sql = postgres(process.env.POSTGRES_URL!, {
   ssl: 'require',
   prepare: false,
+  max: 1,
+  connect_timeout: 10,
 });
 
 async function getUser(email: string): Promise<User | undefined> {
