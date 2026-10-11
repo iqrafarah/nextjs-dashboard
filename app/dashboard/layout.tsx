@@ -1,10 +1,9 @@
 import SideNav from '@/app/ui/dashboard/sidenav';
-import { connection } from 'next/server';
 
-export default async function Layout({ children }: { children: React.ReactNode }) {
-  // Dashboard data is live and must not be queried during prerendering.
-  await connection();
+// Apply request-time rendering to every dashboard route, including its children.
+export const dynamic = 'force-dynamic';
 
+export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <div className="flex h-screen flex-col md:flex-row md:overflow-hidden">
       <div className="w-full flex-none md:w-64">

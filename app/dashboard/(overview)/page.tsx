@@ -10,6 +10,8 @@ import {
 import CardWrapper from '@/app/ui/dashboard/cards';
 import type { Metadata } from 'next';
 
+export const dynamic = 'force-dynamic';
+
 export const metadata: Metadata = {
   title: 'Dashboard',
 };
