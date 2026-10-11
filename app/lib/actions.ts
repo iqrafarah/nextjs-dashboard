@@ -6,6 +6,9 @@ import { redirect } from 'next/navigation';
 import postgres from 'postgres';
 import { signIn } from '@/auth';
 import { AuthError } from 'next-auth';
+import { createQueryDiagnostics } from './query-diagnostics';
+
+const traceQuery = createQueryDiagnostics('actions');
 
 const sql = postgres(process.env.POSTGRES_URL!, {
   ssl: 'require',
@@ -64,10 +67,10 @@ export async function createInvoice(prevState: State, formData: FormData) {
   const date = new Date().toISOString().split('T')[0];
 
   try {
-    await sql`
+    await traceQuery('invoice-create', () => sql`
       INSERT INTO invoices (customer_id, amount, status, date)
       VALUES (${customerId}, ${amountInCents}, ${status}, ${date})
-    `;
+    `);
   } catch (error) {
     return {
       message: 'Database Error: Failed to Create Invoice.',
@@ -100,11 +103,11 @@ export async function updateInvoice(
   const amountInCents = amount * 100;
 
   try {
-    await sql`
+    await traceQuery('invoice-update', () => sql`
     UPDATE invoices
     SET customer_id = ${customerId}, amount = ${amountInCents}, status = ${status}
     WHERE id = ${id}
-  `;
+  `);
   } catch (error) {
     return {
       message: 'Database Error: Failed to Update Invoice.',
@@ -117,8 +120,8 @@ export async function updateInvoice(
 
 export async function deleteInvoice(id: string) {
   try {
-    await sql`DELETE FROM invoices WHERE id = ${id}
-  `;
+    await traceQuery('invoice-delete', () => sql`DELETE FROM invoices WHERE id = ${id}
+  `);
   } catch (error) {
     throw new Error('Database Error: Failed to Delete Invoice.');
   }
